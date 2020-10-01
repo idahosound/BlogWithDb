@@ -20,7 +20,8 @@ mongoose.connect("mongodb://localhost:27017/myBlog", {
 
 const postSchema = {
   title: String,
-  text: String
+  text: String,
+  updated: {type: Date, default:Date.now}
 };
 
 const Post = mongoose.model("post", postSchema);
@@ -30,7 +31,8 @@ const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pelle
 const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
 
 app.get('/', function(req, res) {
-    Post.find({}, function(err, foundPosts) {
+  // finds all posts and sorts in reverse chronological order
+    Post.find({}, null, {sort: {updated: -1}}, function(err, foundPosts) {
       if (err) {
         console.log(err)
       } else {
@@ -68,15 +70,14 @@ app.post('/', function(req, res) {
 });
 
 app.get('/posts/:postTopic', function(req, res) {
-  Post.findOne({
-    _id: req.params.postTopic
-  }, function(err, foundPost) {
+  Post.findById(req.params.postTopic, function(err, foundPost) {
     if (err) {
       console.log(err)
     } else {
       res.render('post', {
         postTitle: foundPost.title,
-        postText: foundPost.text
+        postText: foundPost.text,
+        postDate: foundPost.updated
       });
     };
   });
