@@ -4,7 +4,7 @@
 
 <% postLog.forEach(function(post) { %>
   <h2><%= post.title%></h2>
-  <p><%= post.text.slice(0,100) + "... "%><a href="/posts/<%=post.title%>">Read More</a></p>
+  <p><%= post.text.slice(0,100) + "... "%><a href="/posts/<%= post._id %>">Read More</a></p>
 <%});%>
 
 <%- include('partials/footer') -%>
