@@ -1,10 +1,16 @@
 <%- include('partials/header') -%>
 <h1>Home</h1>
-<p><%= homeStartingContent %></p>
+<p class="keepWhite"><%= homeContent %></p>
 
 <% postLog.forEach(function(post) { %>
   <h2><%= post.title%></h2>
-  <p><%= post.text.slice(0,100) + "... "%><a href="/posts/<%= post._id %>">Read More</a></p>
+    <% var postFinal = post.text;
+    if(postFinal.length > 100) {
+      postFinal = post.text.slice(0, 99) + "... " %>
+      <p><%= postFinal %><a href="/posts/<%= post._id %>">Read More</a></p>
+    <% } else { %>
+      <p><%= postFinal %></p>
+    <% } %>
   <p class="small text-muted">
     Posted on <%= post.updated.toDateString() %>
     </p>

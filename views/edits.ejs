@@ -1,0 +1,26 @@
+<%- include('partials/header') -%>
+<h1>Edit</h1>
+<form action="/Edits" method="post" class="clearfix">
+  <div class="form-group">
+    <label for="homeText">Home</label>
+    <textarea id="homeText" name="content" class="form-control" rows="5"><%= homeContent.contentText %></textarea>
+  </div>
+    <button type="submit" name="submit" class="btn btn-primary float-right" value="home">Refresh</button>
+</form>
+
+<form action="/Edits" method="post" class="clearfix">
+  <div class="form-group">
+    <label for="aboutEdit">About</label>
+    <textarea id="aboutEdit" name="content" class="form-control" rows="5"><%= aboutContent.contentText %></textarea>
+  </div>
+  <button type="submit" name="submit" class="btn btn-primary float-right" value="about">Refresh</button>
+</form>
+
+<form action="/Edits" method="post" class="clearfix">
+  <div class="form-group">
+    <label for="contactEdit">Contact</label>
+    <textarea id="contactEdit" name="content" class="form-control" rows="5"><%= contactContent.contentText %></textarea>
+  </div>
+  <button type="submit" name="submit" class="btn btn-primary float-right" value="contact">Refresh</button>
+</form>
+<%- include('partials/footer') -%>

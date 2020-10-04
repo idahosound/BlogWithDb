@@ -33,3 +33,10 @@
 	font-size: 12px;
   color: #fff;
 }
+.keepWhite {
+  white-space: pre-wrap;
+}
+
+label {
+  margin-top: 10px;
+}
