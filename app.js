@@ -132,6 +132,7 @@ app.post('/', function(req, res) {
   res.redirect('/');
 });
 
+// Gets an individual post
 app.get('/posts/:postID', function(req, res) {
   Post.findById(req.params.postID, function(err, foundPost) {
     if (err) {
@@ -146,61 +147,70 @@ app.get('/posts/:postID', function(req, res) {
   });
 });
 
-app.get('/edits', function(req,res){
-  Blurb.findOne({contentType:'home'}, function(err, foundHome){
-    if (err) {
-      console.log(err);
-    } else {
-      Blurb.findOne({contentType:'about'}, function(err, foundAbout){
-        if (err){
-          console.log(err);
-        } else {
-          Blurb.findOne({contentType:'contact'}, function(err, foundContact){
-            if(err){
-              console.log(err);
-            } else {
-              res.render('edits', {
-                homeContent:foundHome,
-                aboutContent:foundAbout,
-                contactContent:foundContact
-              });
-            };
-          });
-        };
-      });
-    };
+// This version is a callback stack that makes the mongoose queries execute in series.
+// It is replaced by using async and await in the GET /EDITS function while calling
+// the findContent function, which returns a promise. When the promise is fulfilled,
+// the await proceeds to the next step
+// app.get('/edits', function(req,res){
+//   Blurb.findOne({contentType:'home'}, function(err, foundHome){
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       Blurb.findOne({contentType:'about'}, function(err, foundAbout){
+//         if (err){
+//           console.log(err);
+//         } else {
+//           Blurb.findOne({contentType:'contact'}, function(err, foundContact){
+//             if(err){
+//               console.log(err);
+//             } else {
+//               res.render('edits', {
+//                 homeContent:foundHome,
+//                 aboutContent:foundAbout,
+//                 contactContent:foundContact
+//               });
+//             };
+//           });
+//         };
+//       });
+//     };
+//   });
+// });
+
+function findContent(cType) {
+  return new Promise(function(resolve, reject) {
+    Blurb.findOne({
+      contentType: cType
+    }, function(err, item) {
+      if (err) {
+        console.log(err);
+        reject()
+      } else {
+        resolve(item)
+      };
+    });
   });
+};
+
+// When the edit page is opened.
+// Use async and await with the promises function above
+app.get('/edits', async function(req, res) {
+  try {
+    let foundHome = await findContent("home");
+    let foundAbout = await findContent('about');
+    let foundContact = await findContent('contact');
+    res.render('edits', {
+      homeContent: foundHome,
+      aboutContent: foundAbout,
+      contactContent: foundContact
+    });
+  } catch (err) {
+    console.log(err);
+  };
 });
 
 
-
-// app.get('/edits', function(req, res) {
-//   Blurb.findOne({
-//       contentType: "home"
-//     }, function(err, foundHome) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         Blurb.findOne({
-//           contentType: "about"
-//         }, function(err, foundAbout) {
-//           if (err) {
-//             console.log(err);
-//           } else {
-//             Blurb.findOne({
-//                 contentType: "contact"
-//               }, function(err, foundContact) {
-//                 if (err) {
-//                   console.log(err);
-//                 } else {
-//                   res.render('edits', {
-//                     homeContent: foundHome,
-//                     aboutContent: foundAbout,
-//                     contactContent: foundContact});
-//                   };
-//                 });
-
-
+// When the editor submits new content
 app.post("/Edits", function(req, res) {
   Blurb.findOneAndUpdate({
     contentType: req.body.submit
