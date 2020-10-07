@@ -1,0 +1,18 @@
+<%- include('partials/header') -%>
+<h1>Edit Post</h1>
+<form action="/edit_post" method="post">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="postTitle" class="form-control" value="<%= postTitle %>">
+  </div>
+  <div class="form-group">
+    <label for="post">Post</label>
+    <textarea id="post" name="postText" rows="8" cols="80" class="form-control"><%= postText %></textarea>
+  </div>
+  <p class="small text-muted">
+    Last updated: <%= postDate.toDateString() %>
+    </p>
+  <button type="submit" name="update" class="btn btn-primary" value="<%= postID %>">Update</button>
+  <button type="submit" name="delete" class="btn btn-primary" value="<%= postID %>">Delete</button>
+</form>
+<%- include('partials/footer') -%>

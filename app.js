@@ -123,6 +123,33 @@ app.get('/about', function(req, res) {
     res.render('compose')
   });
 
+  app.get('/edit_post/:postID', function(req, res) {
+    Post.findById(req.params.postID, function(err, foundPost){
+      if (err){
+        console.log(err);
+      } else {
+        res.render ('edit_post', {
+          postTitle: foundPost.title,
+          postText: foundPost.text,
+          postDate: foundPost.updated,
+          postID: foundPost._id
+        })
+      }
+    })
+  });
+
+  app.post('/edit_post', function(req,res){
+    let postID = ""
+    if (req.body.update) {
+      postID = req.body.update
+      console.log('this post will be updated');
+    } else {
+      postID = req.body.delete
+      console.log('this post will be deleted');
+    }
+    res.redirect('/edit_post/' + postID)
+  });
+
 app.post('/', function(req, res) {
   let post = new Post({
     title: req.body.postTitle,
@@ -199,33 +226,38 @@ app.get('/edits', async function(req, res) {
     let foundHome = await findContent("home");
     let foundAbout = await findContent('about');
     let foundContact = await findContent('contact');
+    let foundPosts = await Post.find({}, null, {sort: {date:-1}});
     res.render('edits', {
       homeContent: foundHome,
       aboutContent: foundAbout,
-      contactContent: foundContact
+      contactContent: foundContact,
+      postLog: foundPosts
     });
   } catch (err) {
     console.log(err);
   };
 });
 
-
+function updateContent(cType, content) {
+    Blurb.findOneAndUpdate({
+      contentType: cType
+    }, {contentText: content},
+    {usefindAndModify: false},
+    function(err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log((cType + " message has been updated."));
+      };
+    });
+};
 // When the editor submits new content
 app.post("/Edits", function(req, res) {
-  Blurb.findOneAndUpdate({
-    contentType: req.body.submit
-  }, {
-    contentText: req.body.content
-  }, {
-    useFindAndModify: false
-  }, function(err) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.redirect('/')
-    };
+  updateContent('home', req.body.homeContent);
+  updateContent('about', req.body.aboutContent);
+  updateContent('contact', req.body.contactContent);
+  res.redirect('/');
   });
-});
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
