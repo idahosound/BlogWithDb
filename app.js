@@ -142,12 +142,25 @@ app.get('/about', function(req, res) {
     let postID = ""
     if (req.body.update) {
       postID = req.body.update
-      console.log('this post will be updated');
+      Post.findOneAndUpdate({_id: postID}, {title:req.body.postTitle, text: req.body.postText, updated: Date.now()}, {usefindAndModify: false}, function (err){
+        if (err){
+          console.log(err);
+        } else {
+          console.log("The post has been updated.");;
+          res.redirect('/edits');
+        };
+      });
     } else {
       postID = req.body.delete
-      console.log('this post will be deleted');
-    }
-    res.redirect('/edit_post/' + postID)
+      Post.findOneAndDelete({_id:postID}, function (err){
+        if (err){
+          console.log(err);
+        } else {
+          console.log('The post has been deleted');
+          res.redirect('/edits');
+        };
+      });
+    };
   });
 
 app.post('/', function(req, res) {
